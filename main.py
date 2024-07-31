@@ -25,7 +25,6 @@ def download_txt(response, filename, folder='books/'):
         file.write(response.content)
 
 def download_image(picture_link, image_name, folder='images/'):
-    print(picture_link)
     response = requests.get(picture_link)
     response.raise_for_status()
     image_path = os.path.join(folder, image_name)
@@ -57,7 +56,10 @@ for number in range(1, 11):
         file_path = os.path.join(folder, filename)
 
 
-
+        book_comments = soup.find_all(class_='texts')
+        for book_comment in book_comments:
+            book_comment = book_comment.find(class_='black')
+            print(book_comment.text)
 
 
         download_txt(response, filename, folder='books/')
