@@ -59,7 +59,10 @@ for number in range(1, 11):
         book_comments = soup.find_all(class_='texts')
         for book_comment in book_comments:
             book_comment = book_comment.find(class_='black')
-            print(book_comment.text)
+            
+
+        book_genre = soup.find_all(class_='d_book')
+        print(book_genre[1].text)
 
 
         download_txt(response, filename, folder='books/')
