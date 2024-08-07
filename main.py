@@ -7,23 +7,6 @@ from urllib.parse import urlsplit
 import argparse
 
 
-folder = "books"
-image_folder = "images"
-
-parser = argparse.ArgumentParser(
-    description='скачивает книги'
-)
-parser.add_argument('--start_id', help='id начало скачивания книг', default=1, type=int)
-parser.add_argument('--end_id', help='конечный id книг', default=11, type=int)
-args = parser.parse_args()
-
-if not os.path.exists(folder):
-    os.makedirs(folder, exist_ok=True)
-
-if not os.path.exists(image_folder):
-    os.makedirs(image_folder, exist_ok=True)
-
-
 def check_for_redirect(response):
     if response.history:
         raise requests.HTTPError
@@ -69,6 +52,21 @@ def parse_book_page(book_response):
     }
     return parse_book_page
 
+folder = "books"
+image_folder = "images"
+
+parser = argparse.ArgumentParser(
+    description='скачивает книги'
+)
+parser.add_argument('--start_id', help='id начало скачивания книг', default=1, type=int)
+parser.add_argument('--end_id', help='конечный id книг', default=11, type=int)
+args = parser.parse_args()
+
+if not os.path.exists(folder):
+    os.makedirs(folder, exist_ok=True)
+
+if not os.path.exists(image_folder):
+    os.makedirs(image_folder, exist_ok=True)
 
 for number in range(args.start_id, args.end_id):
     url = f'https://tululu.org/txt.php?id={number}'
@@ -94,3 +92,47 @@ for number in range(args.start_id, args.end_id):
     except requests.HTTPError:
         print("такой книги нет")
 
+def main():
+    folder = "books"
+    image_folder = "images"
+
+    parser = argparse.ArgumentParser(
+        description='скачивает книги'
+    )
+    parser.add_argument('--start_id', help='id начало скачивания книг', default=1, type=int)
+    parser.add_argument('--end_id', help='конечный id книг', default=11, type=int)
+    args = parser.parse_args()
+
+    if not os.path.exists(folder):
+        os.makedirs(folder, exist_ok=True)
+
+    if not os.path.exists(image_folder):
+        os.makedirs(image_folder, exist_ok=True)
+
+    for number in range(args.start_id, args.end_id):
+        url = f'https://tululu.org/txt.php?id={number}'
+        book_url = f"https://tululu.org/b{number}/"
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            check_for_redirect(response)
+
+            book_response = requests.get(book_url)
+            book_response.raise_for_status()        
+
+            filename = f'{number}.{sanitize_filename(parse_book_page(book_response)["book_name"])}.txt'
+            file_path = os.path.join(folder, filename)
+
+            dictionary_book_page = parse_book_page(book_response)
+            
+            download_txt(response, filename, folder='books/')
+            download_image(dictionary_book_page["picture_link"], dictionary_book_page["image_name"], folder='images/')
+            print("Заголовок:", dictionary_book_page["book_name"], dictionary_book_page["author"])
+            print(dictionary_book_page["book_genre"])
+            
+        except requests.HTTPError:
+            print("такой книги нет")
+
+
+if __name__ == "__main__":
+    main()
