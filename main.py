@@ -71,13 +71,19 @@ if not os.path.exists(image_folder):
 for number in range(args.start_id, args.end_id):
     url = f'https://tululu.org/txt.php?id={number}'
     book_url = f"https://tululu.org/b{number}/"
+
+    try:
+        book_response = requests.get(book_url)
+        book_response.raise_for_status()
+        check_for_redirect(book_response)
+
+    except requests.HTTPError:
+        print("такой книги нет")
+
     try:
         response = requests.get(url)
         response.raise_for_status()
         check_for_redirect(response)
-
-        book_response = requests.get(book_url)
-        book_response.raise_for_status()        
 
         filename = f'{number}.{sanitize_filename(parse_book_page(book_response)["book_name"])}.txt'
         file_path = os.path.join(folder, filename)
@@ -91,6 +97,7 @@ for number in range(args.start_id, args.end_id):
         
     except requests.HTTPError:
         print("такой книги нет")
+
 
 def main():
     folder = "books"
