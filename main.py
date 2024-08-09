@@ -42,7 +42,7 @@ def parse_book_page(book_response, book_url):
     book_genre = soup.find_all(class_='d_book')
     book_genre = book_genre[1].text
 
-    parse_book_page = {
+    book_parameters = {
         "book_genre": book_genre,
         "picture_link": picture_link,
         "author": author,
@@ -50,7 +50,7 @@ def parse_book_page(book_response, book_url):
         "image_name": image_name,
         "book_comment": book_comments,
     }
-    return parse_book_page
+    return book_parameters
 
 
 def main():
