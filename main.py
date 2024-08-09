@@ -11,7 +11,7 @@ def check_for_redirect(response):
     if response.history:
         raise requests.HTTPError
         
-def download_txt(response, filename, folder='books/'):
+def download_txt(response, filename, file_path, folder='books/'):
     with open(file_path, 'wb') as file:
         file.write(response.content)
 
@@ -22,7 +22,7 @@ def download_image(picture_link, image_name, folder='images/'):
     with open(image_path, 'wb') as file:
         file.write(response.content)
 
-def parse_book_page(book_response):
+def parse_book_page(book_response, book_url):
     soup = BeautifulSoup(book_response.text, 'lxml')
     title_tag = soup.find('h1').text.split('::')
     author = title_tag[1].strip()
@@ -51,52 +51,6 @@ def parse_book_page(book_response):
         "book_comment": book_comments,
     }
     return parse_book_page
-
-folder = "books"
-image_folder = "images"
-
-parser = argparse.ArgumentParser(
-    description='скачивает книги'
-)
-parser.add_argument('--start_id', help='id начало скачивания книг', default=1, type=int)
-parser.add_argument('--end_id', help='конечный id книг', default=11, type=int)
-args = parser.parse_args()
-
-if not os.path.exists(folder):
-    os.makedirs(folder, exist_ok=True)
-
-if not os.path.exists(image_folder):
-    os.makedirs(image_folder, exist_ok=True)
-
-for number in range(args.start_id, args.end_id):
-    url = f'https://tululu.org/txt.php?id={number}'
-    book_url = f"https://tululu.org/b{number}/"
-
-    try:
-        book_response = requests.get(book_url)
-        book_response.raise_for_status()
-        check_for_redirect(book_response)
-
-    except requests.HTTPError:
-        print("такой книги нет")
-
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        check_for_redirect(response)
-
-        filename = f'{number}.{sanitize_filename(parse_book_page(book_response)["book_name"])}.txt'
-        file_path = os.path.join(folder, filename)
-
-        dictionary_book_page = parse_book_page(book_response)
-        
-        download_txt(response, filename, folder='books/')
-        download_image(dictionary_book_page["picture_link"], dictionary_book_page["image_name"], folder='images/')
-        print("Заголовок:", dictionary_book_page["book_name"], dictionary_book_page["author"])
-        print(dictionary_book_page["book_genre"])
-        
-    except requests.HTTPError:
-        print("такой книги нет")
 
 
 def main():
@@ -127,12 +81,12 @@ def main():
             book_response = requests.get(book_url)
             book_response.raise_for_status()        
 
-            filename = f'{number}.{sanitize_filename(parse_book_page(book_response)["book_name"])}.txt'
+            filename = f'{number}.{sanitize_filename(parse_book_page(book_response, book_url)["book_name"])}.txt'
             file_path = os.path.join(folder, filename)
 
-            dictionary_book_page = parse_book_page(book_response)
+            dictionary_book_page = parse_book_page(book_response, book_url)
             
-            download_txt(response, filename, folder='books/')
+            download_txt(response, filename, file_path, folder='books/')
             download_image(dictionary_book_page["picture_link"], dictionary_book_page["image_name"], folder='images/')
             print("Заголовок:", dictionary_book_page["book_name"], dictionary_book_page["author"])
             print(dictionary_book_page["book_genre"])
