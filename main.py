@@ -78,12 +78,12 @@ def main():
             check_for_redirect(response)
 
             book_response = requests.get(book_url)
-            book_response.raise_for_status()        
-
-            filename = f'{number}.{sanitize_filename(parse_book_page(book_response, book_url)["book_name"])}.txt'
-            file_path = os.path.join(folder, filename)
+            book_response.raise_for_status()
 
             dictionary_book_page = parse_book_page(book_response, book_url)
+
+            filename = f'{number}.{sanitize_filename(dictionary_book_page["book_name"])}.txt'
+            file_path = os.path.join(folder, filename)
             
             download_txt(response, filename, file_path, folder='books/')
             download_image(dictionary_book_page["picture_link"], dictionary_book_page["image_name"], folder='images/')
