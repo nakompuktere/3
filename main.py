@@ -64,11 +64,10 @@ def main():
     parser.add_argument('--end_id', help='конечный id книг', default=11, type=int)
     args = parser.parse_args()
 
-    if not os.path.exists(folder):
-        os.makedirs(folder, exist_ok=True)
+    
+    os.makedirs(folder, exist_ok=True)
 
-    if not os.path.exists(image_folder):
-        os.makedirs(image_folder, exist_ok=True)
+    os.makedirs(image_folder, exist_ok=True)
 
     for number in range(args.start_id, args.end_id):
         url = f'https://tululu.org/txt.php?id={number}'
