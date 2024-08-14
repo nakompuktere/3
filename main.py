@@ -70,10 +70,13 @@ def main():
     os.makedirs(image_folder, exist_ok=True)
 
     for number in range(args.start_id, args.end_id):
-        url = f'https://tululu.org/txt.php?id={number}'
+        url = f'https://tululu.org/txt.php'
         book_url = f"https://tululu.org/b{number}/"
+        payload = {
+            "id": number
+        }
         try:
-            response = requests.get(url)
+            response = requests.get(url, params=payload)
             response.raise_for_status()
             check_for_redirect(response)
 
