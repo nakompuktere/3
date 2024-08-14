@@ -84,15 +84,15 @@ def main():
             book_response.raise_for_status()
             check_for_redirect(response)
 
-            dictionary_book_page = parse_book_page(book_response, book_url)
+            book_page = parse_book_page(book_response, book_url)
 
-            filename = f'{number}.{sanitize_filename(dictionary_book_page["book_name"])}.txt'
+            filename = f'{number}.{sanitize_filename(book_page["book_name"])}.txt'
             file_path = os.path.join(folder, filename)
             
             download_txt(response, filename, file_path, folder='books/')
-            download_image(dictionary_book_page["picture_link"], dictionary_book_page["image_name"], folder='images/')
-            print("Заголовок:", dictionary_book_page["book_name"], dictionary_book_page["author"])
-            print(dictionary_book_page["book_genre"])
+            download_image(book_page["picture_link"], book_page["image_name"], folder='images/')
+            print("Заголовок:", book_page["book_name"], book_page["author"])
+            print(book_page["book_genre"])
             
         except requests.HTTPError:
             print("такой книги нет")
