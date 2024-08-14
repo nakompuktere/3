@@ -82,6 +82,7 @@ def main():
 
             book_response = requests.get(book_url)
             book_response.raise_for_status()
+            check_for_redirect(response)
 
             dictionary_book_page = parse_book_page(book_response, book_url)
 
