@@ -5,6 +5,7 @@ from pathvalidate import sanitize_filename
 from urllib.parse import urljoin
 from urllib.parse import urlsplit
 import argparse
+import time
 
 
 def check_for_redirect(response):
@@ -39,11 +40,14 @@ def parse_book_page(book_response, book_url):
         book_comment = book_comment.find(class_='black')
         book_comments.append(book_comment)
         
-    book_genre = soup.find_all(class_='d_book')
-    book_genre = book_genre[1].text
-
+    genre_tag = soup.find_all(class_='d_book')[1]
+    genre_links = genre_tag.find_all("a")
+    genres = []
+    for genre in genre_links:
+        genres.append(genre.text)
+    
     book_parameters = {
-        "book_genre": book_genre,
+        "book_genres": genres,
         "picture_link": picture_link,
         "author": author,
         "book_name": book_name,
@@ -91,11 +95,14 @@ def main():
             
             download_txt(response, filename, file_path, folder='books/')
             download_image(book_page["picture_link"], book_page["image_name"], folder='images/')
-            print("Заголовок:", book_page["book_name"], book_page["author"])
-            print(book_page["book_genre"])
             
         except requests.HTTPError:
             print("такой книги нет")
+        
+        except requests.ConnectionError:
+            print("ошибка соединения")
+            time.sleep(5)
+
 
 
 if __name__ == "__main__":
