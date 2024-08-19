@@ -160,5 +160,5 @@ cython_debug/
 #.idea/
 
 .gitattributes
-.images
-.books
+images/
+books/
