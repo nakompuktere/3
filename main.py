@@ -42,9 +42,9 @@ def parse_book_page(book_response, book_url):
         
     genre_tag = soup.find_all(class_='d_book')[1]
     genre_links = genre_tag.find_all("a")
-    genres = []
-    for genre in genre_links:
-        genres.append(genre.text)
+
+    genres = [genre.text for genre in genre_links]
+
     
     book_parameters = {
         "book_genres": genres,
