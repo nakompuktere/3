@@ -6,6 +6,7 @@ from urllib.parse import urljoin
 from urllib.parse import urlsplit
 import argparse
 import time
+import json
 
 
 def check_for_redirect(response):
@@ -34,11 +35,13 @@ def parse_book_page(book_response, book_url):
     image_name = urlsplit(picture_link).path.split('/')[-1]
 
     comments_tags = soup.find_all(class_='texts')
+   
     book_comments = []
 
     for book_comment in comments_tags:
-        book_comment = book_comment.find(class_='black')
+        book_comment = book_comment.find(class_='black').text
         book_comments.append(book_comment)
+    print(book_comments)
         
     genre_tag = soup.find_all(class_='d_book')[1]
     genre_links = genre_tag.find_all("a")
@@ -73,6 +76,7 @@ def main():
 
     os.makedirs(image_folder, exist_ok=True)
 
+
     for number in range(args.start_id, args.end_id):
         url = f'https://tululu.org/txt.php'
         book_url = f"https://tululu.org/b{number}/"
@@ -102,7 +106,6 @@ def main():
         except requests.ConnectionError:
             print("ошибка соединения")
             time.sleep(5)
-
 
 
 if __name__ == "__main__":
