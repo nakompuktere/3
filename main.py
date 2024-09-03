@@ -41,7 +41,6 @@ def parse_book_page(book_response, book_url):
     for book_comment in comments_tags:
         book_comment = book_comment.find(class_='black').text
         book_comments.append(book_comment)
-    print(book_comments)
         
     genre_tag = soup.find_all(class_='d_book')[1]
     genre_links = genre_tag.find_all("a")
