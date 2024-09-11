@@ -21,6 +21,17 @@ python main.py
 ```
 python main.py --start_id 5 --end_page 12
 ```
+Можно выбрать путь к каталогу с результатами парсинга.
+Для этого используйте `--dest_folder`.
+```
+python main.py --dest_folder folder_name
+```
+Можно не скачивать картинки или книги.
+Для этого используйте `--skip_imgs` и `--skip_txt`.
+```
+python main.py --skip_imgs --skip_txt
+```
+
 
 ### Цель проекта
 

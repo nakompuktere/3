@@ -89,7 +89,7 @@ def main():
 
             book_response = requests.get(book_url)
             book_response.raise_for_status()
-            check_for_redirect(response)
+            check_for_redirect(book_response)
 
             book_page = parse_book_page(book_response, book_url)
 
