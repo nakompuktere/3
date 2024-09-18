@@ -2,17 +2,18 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from urllib.parse import urlsplit
-from main import parse_book_page
-from main import download_image
-from main import download_txt
-from main import check_for_redirect
+from parse_tutulu_books import parse_book_page
+from parse_tutulu_books import download_image
+from parse_tutulu_books import download_txt
+from parse_tutulu_books import check_for_redirect
 from pathvalidate import sanitize_filename
 import os
 import json
 import argparse
+import time
 
 
-all_info_book = []
+book_description = []
 
 parser = argparse.ArgumentParser(
     description='скачивает фентези книги и информацию про них'
@@ -51,10 +52,13 @@ for number in range(args.start_page, args.end_page):
         book_link = book.find("a")["href"]
 
         book_id = book_link[2:-1]
-        url_two = f"https://tululu.org/txt.php?id={book_id}"
+        txt_url = "https://tululu.org/txt.php?id="
+        payload = {
+            "book_id": book_id
+        }
 
         try:
-            text_response = requests.get(url_two)
+            text_response = requests.get(txt_url, params=payload)
             text_response.raise_for_status()
             check_for_redirect(text_response)
 
@@ -71,7 +75,7 @@ for number in range(args.start_page, args.end_page):
             book_parameters["book_path"] = f"{books_folder}/{book_parameters["book_name"]}"
             book_parameters["image_path"] = f"{image_folder}/{book_parameters["image_name"]}"
 
-            all_info_book.append(book_parameters)
+            book_description.append(book_parameters)
 
             filename = f'{number}.{sanitize_filename(book_parameters["book_name"])}.txt'
             file_path = os.path.join(books_folder, filename)
@@ -87,9 +91,10 @@ for number in range(args.start_page, args.end_page):
         
         except requests.ConnectionError:
             print("ошибка соединения")
+            time.sleep(5)
 
 
 with open(f"{args.dest_folder}/books_description.json", "w", encoding='utf8') as file:
-    json.dump(all_info_book, file, ensure_ascii=False, indent=4)
+    json.dump(book_description, file, ensure_ascii=False, indent=4)
 
 

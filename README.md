@@ -13,23 +13,23 @@ pip install -r requirements.txt
 
 Чтобы запустить программу следует ввести в терминал:
 ```
-python main.py
+python parse_tutulu_books.py
 ```
 Можно сделать выбор с какой по какую книгу вам надо скачать.
 Для этого используйте `--start_page` и `--end_page`.
 Следует ввести id начала и конца
 ```
-python main.py --start_id 5 --end_page 12
+python parse_tutulu_books --start_id 5 --end_page 12
 ```
 Можно выбрать путь к каталогу с результатами парсинга.
 Для этого используйте `--dest_folder`.
 ```
-python main.py --dest_folder folder_name
+python parse_tutulu_books --dest_folder folder_name
 ```
 Можно не скачивать картинки или книги.
 Для этого используйте `--skip_imgs` и `--skip_txt`.
 ```
-python main.py --skip_imgs --skip_txt
+python parse_tutulu_books --skip_imgs --skip_txt
 ```
 
 
