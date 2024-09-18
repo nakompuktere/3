@@ -52,11 +52,10 @@ for number in range(args.start_page, args.end_page):
         book_link = book.find("a")["href"]
 
         book_id = book_link[2:-1]
-        txt_url = "https://tululu.org/txt.php?id="
+        txt_url = "https://tululu.org/txt.php"
         payload = {
-            "book_id": book_id
+            "id": book_id
         }
-
         try:
             text_response = requests.get(txt_url, params=payload)
             text_response.raise_for_status()
@@ -76,7 +75,7 @@ for number in range(args.start_page, args.end_page):
             book_parameters["image_path"] = f"{image_folder}/{book_parameters["image_name"]}"
 
             book_description.append(book_parameters)
-
+            print(book_description)
             filename = f'{number}.{sanitize_filename(book_parameters["book_name"])}.txt'
             file_path = os.path.join(books_folder, filename)
 
