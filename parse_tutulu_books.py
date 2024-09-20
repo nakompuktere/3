@@ -25,25 +25,32 @@ def download_image(picture_link, image_name, folder='images/'):
         file.write(response.content)
 
 def parse_book_page(book_response, book_url):
+    title_selector = "h1"
     soup = BeautifulSoup(book_response.text, 'lxml')
-    title_tag = soup.find('h1').text.split('::')
+    title_tag = soup.select_one(title_selector).text.split('::')
+
     author = title_tag[1].strip()
     book_name = title_tag[0].strip()
 
-    book_picture_link = soup.find(class_='bookimage').find('img')['src']
+    picture_selector = "div.bookimage img "
+    book_picture_link = soup.select_one(picture_selector)["src"]
     picture_link = urljoin(book_url, book_picture_link)
     image_name = urlsplit(picture_link).path.split('/')[-1]
 
-    comments_tags = soup.find_all(class_='texts')
+    comments_selector = "div.text"
+    comments_tags = soup.select(comments_selector)
    
     book_comments = []
 
     for book_comment in comments_tags:
-        book_comment = book_comment.find(class_='black').text
+        selector = "span.black"
+        book_comment = book_comment.select(selector).text
         book_comments.append(book_comment)
-        
-    genre_tag = soup.find_all(class_='d_book')[1]
-    genre_links = genre_tag.find_all("a")
+    
+    genre_selector = "span.d_book"
+    genre_selector = "a"
+    genre_tag = soup.select(genre_selector)[1]
+    genre_links = genre_tag.select(genre_selector)
 
     genres = [genre.text for genre in genre_links]
 
