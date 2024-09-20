@@ -14,7 +14,6 @@ import time
 
 
 def main():
-
     parser = argparse.ArgumentParser(
         description='скачивает фентези книги и информацию про них'
     )
