@@ -36,24 +36,27 @@ def main():
     os.makedirs(image_folder, exist_ok=True)
 
     for number in range(args.start_page, args.end_page):
-        url = f"https://tululu.org/l55/{number}/"
-        response = requests.get(url)
-        response.raise_for_status()
+        try:
+            url = f"https://tululu.org/l55/{number}/"
+            response = requests.get(url)
+            response.raise_for_status()
+            check_for_redirect(response)
 
-        soup = BeautifulSoup(response.text, 'lxml')
+            soup = BeautifulSoup(response.text, 'lxml')
 
-        book_selector = "table.d_book"
+            book_selector = "table.d_book"
 
-        books = soup.select(book_selector)
-        
-        for book in books:
-            book_link = book.find("a")["href"]
-            book_id = book_link[2:-1]
-            txt_url = "https://tululu.org/txt.php"
-            payload = {
-                "id": book_id
-            }
-            try:
+            books = soup.select(book_selector)
+       
+            
+            for book in books:
+                book_link = book.find("a")["href"]
+                book_id = book_link[2:-1]
+                txt_url = "https://tululu.org/txt.php"
+                payload = {
+                    "id": book_id
+                }
+
                 text_response = requests.get(txt_url, params=payload)
                 text_response.raise_for_status()
                 check_for_redirect(text_response)
@@ -79,13 +82,12 @@ def main():
 
                 if not args.skip_imgs:
                     download_image(book_parameters["picture_link"], book_parameters["image_name"], folder=image_folder)
-
-            except requests.HTTPError:
-                print("такой книги нет")
+        except requests.HTTPError:
+            print("такой книги нет")
             
-            except requests.ConnectionError:
-                print("ошибка соединения")
-                time.sleep(5)
+        except requests.ConnectionError:
+            print("ошибка соединения")
+            time.sleep(5)
 
     with open(f"{args.dest_folder}/books_description.json", "w", encoding='utf8') as file:
         json.dump(book_description, file, ensure_ascii=False, indent=4)
