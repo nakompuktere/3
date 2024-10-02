@@ -23,7 +23,7 @@ def main():
     parser.add_argument('--skip_imgs', help='не скачивать картинки', action='store_true')
     parser.add_argument('--skip_txt', help='не скачивать книги', action='store_true')
 
-    book_description = []
+    book_descriptions = []
     args = parser.parse_args()
 
     image_folder = f"{args.dest_folder}/images"
@@ -72,7 +72,7 @@ def main():
                     book_parameters["book_path"] = f"{books_folder}/{book_parameters["book_name"]}"
                     book_parameters["image_path"] = f"{image_folder}/{book_parameters["image_name"]}"
 
-                    book_description.append(book_parameters)
+                    book_descriptions.append(book_parameters)
                     filename = f'{number}.{sanitize_filename(book_parameters["book_name"])}.txt'
                     file_path = os.path.join(books_folder, filename)
 
@@ -96,7 +96,7 @@ def main():
             time.sleep(5)
 
     with open(f"{args.dest_folder}/books_description.json", "w", encoding='utf8') as file:
-        json.dump(book_description, file, ensure_ascii=False, indent=4)
+        json.dump(book_descriptions, file, ensure_ascii=False, indent=4)
 
 if __name__ == "__main__":
     main()
