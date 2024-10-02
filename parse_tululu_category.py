@@ -47,7 +47,6 @@ def main():
             book_selector = "table.d_book"
 
             books = soup.select(book_selector)
-       
             
             for book in books:
                 book_link = book.find("a")["href"]
@@ -62,26 +61,33 @@ def main():
                 check_for_redirect(text_response)
 
                 book_link = urljoin(url, book_link)
+                try:
+                    book_response = requests.get(book_link)
+                    book_response.raise_for_status()
+                    check_for_redirect(book_response)
 
-                book_response = requests.get(book_link)
-                book_response.raise_for_status()
-                check_for_redirect(book_response)
+                    soup = BeautifulSoup(book_response.text, 'lxml')
 
-                soup = BeautifulSoup(book_response.text, 'lxml')
+                    book_parameters = parse_book_page(book_response, book_link)
+                    book_parameters["book_path"] = f"{books_folder}/{book_parameters["book_name"]}"
+                    book_parameters["image_path"] = f"{image_folder}/{book_parameters["image_name"]}"
 
-                book_parameters = parse_book_page(book_response, book_link)
-                book_parameters["book_path"] = f"{books_folder}/{book_parameters["book_name"]}"
-                book_parameters["image_path"] = f"{image_folder}/{book_parameters["image_name"]}"
+                    book_description.append(book_parameters)
+                    filename = f'{number}.{sanitize_filename(book_parameters["book_name"])}.txt'
+                    file_path = os.path.join(books_folder, filename)
 
-                book_description.append(book_parameters)
-                filename = f'{number}.{sanitize_filename(book_parameters["book_name"])}.txt'
-                file_path = os.path.join(books_folder, filename)
+                    if not args.skip_txt:
+                        download_txt(text_response, filename, file_path, folder=books_folder)
 
-                if not args.skip_txt:
-                    download_txt(text_response, filename, file_path, folder=books_folder)
+                    if not args.skip_imgs:
+                        download_image(book_parameters["picture_link"], book_parameters["image_name"], folder=image_folder)
+                except requests.HTTPError:
+                    print("такой книги нет")
+            
+                except requests.ConnectionError:
+                    print("ошибка соединения")
+                    time.sleep(5)
 
-                if not args.skip_imgs:
-                    download_image(book_parameters["picture_link"], book_parameters["image_name"], folder=image_folder)
         except requests.HTTPError:
             print("такой книги нет")
             
